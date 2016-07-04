@@ -1,7 +1,7 @@
 "use strict";
 document.addEventListener("DOMContentLoaded", function() {
     var xhr = false;
-
+    var xhruv = false;
     function getLocation() {
         console.log("getLocation called");
         if (navigator.geolocation) {
@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 var loni = position.coords.longitude;
                 var lati = position.coords.latitude;
                 console.log(lati, loni);
-                makeRequest(lati, loni);
+                weatherRequest(lati, loni);
+                uvRequest(lati, loni);
             });
         } else {
             x.innerHTML = "Geolocation is not supported by this browser.";
@@ -17,36 +18,38 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     getLocation();
 
-    function makeRequest(lati, loni) {
-        console.log("makeRequest called");
+    function weatherRequest(lati, loni) {
+        console.log("weatherRequest called");
         var url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lati + "&lon=" + loni + "&units=metric&APPID=f868e4b1f7dfdcb922408670cdb4f5a9";
-        console.log(url);
-var uvurl = "http://api.openweathermap.org/v3/uvi/" + lati +","+ loni + ".json?APPID=f868e4b1f7dfdcb922408670cdb4f5a9";
-console.log ("uvurl: "+uvurl);
+        //console.log(url);
+
 if (window.XMLHttpRequest) xhr = new XMLHttpRequest();
         if (xhr) {
-            xhr.onload = showState;
+            xhr.onload = processResponse;
             xhr.open('GET', url);
             xhr.send();
-            // xhr.open('GET', uvurl);
-            // xhr.send();
-
-        } else {
+} else {
             document.querySelector('#weather').innerHTML = 'Oops, request cannot be made.';
         }
-    }
-
-    function showState() {
-        console.log("showState called");
-        // document.querySelector('#weather').innerHTML = 'The current state is: ' + xhr.readyState + ' and the status is: ' + xhr.status;
-        if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status <= 400) {
-            var data = JSON.parse(xhr.responseText);
-            processResponse(data);
+}
+function uvRequest(lati, loni) {
+var uvurl = "http://api.openweathermap.org/v3/uvi/" + lati +","+ loni + ".json?APPID=f868e4b1f7dfdcb922408670cdb4f5a9";
+//console.log ("uvurl: "+uvurl);
+if (window.XMLHttpRequest) xhruv = new XMLHttpRequest();
+        if (xhruv) {
+            xhruv.onload = processUvResponse;
+            xhruv.open('GET', uvurl);
+            xhruv.send();
+} else {
+            document.querySelector('#weather').innerHTML = 'UV data not available in your area.';
         }
     }
+
     function processResponse(data) {
           console.log("processResponse called");
-console.log(data);
+//console.log("data: " + data);
+  if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status <= 400) {
+      var data = JSON.parse(xhr.responseText);
 var city = data.name;
 console.log(city);
 var temp = data.main.temp;
@@ -55,6 +58,14 @@ var weather = data.weather[0].main;
 console.log("weather" + weather);
 
     }
+}
+
+function processUvResponse(uvdata) {
+console.log("processUvResponse called");
+var uvi = uvdata.data;
+if (!uvdata.data) {console.log("uv data unavailable");}
+else {console.log(uvi);}
+}
 });
 
  // function toggleUnits() {
