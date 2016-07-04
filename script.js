@@ -2,13 +2,33 @@
 document.addEventListener("DOMContentLoaded", function() {
     var xhr = false;
     var xhruv = false;
+    var units = "metric";
+    var symbol = "C";
+    var temp;
+document.querySelector("#toggle").addEventListener("click", toggleUnits);
+function toggleUnits () {
+//alert("toggled");
+if (this.innerHTML === "imperial") {
+temp = Math.round(temp*9/5 + 32);
+units = "imperial";
+symbol = "F";
+this.innerHTML = "metric";
+}
+else {
+temp = Math.round((temp-32) * 5/9);
+units = "metric";
+symbol = "C";
+this.innerHTML = "imperial";
+}
+document.querySelector("#temperature").innerHTML = temp + "°" + symbol;
+}
     function getLocation() {
         console.log("getLocation called");
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 var loni = position.coords.longitude;
                 var lati = position.coords.latitude;
-                console.log(lati, loni);
+console.log(lati, loni);
                 weatherRequest(lati, loni);
                 uvRequest(lati, loni);
             });
@@ -20,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function weatherRequest(lati, loni) {
         console.log("weatherRequest called");
-        var url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lati + "&lon=" + loni + "&units=metric&APPID=f868e4b1f7dfdcb922408670cdb4f5a9";
+        var url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lati + "&lon=" + loni + "&units=" + units + "&APPID=f868e4b1f7dfdcb922408670cdb4f5a9";
         //console.log(url);
 
 if (window.XMLHttpRequest) xhr = new XMLHttpRequest();
@@ -51,50 +71,35 @@ if (window.XMLHttpRequest) xhruv = new XMLHttpRequest();
   if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status <= 400) {
       var data = JSON.parse(xhr.responseText);
 var city = data.name;
-console.log(city);
-var temp = data.main.temp;
-console.log("temp"+temp);
-var weather = data.weather[0].main;
-console.log("weather" + weather);
-
+document.querySelector("#location").innerHTML = city;
+//console.log(city);
+temp = Math.round(data.main.temp);
+document.querySelector("#temperature").innerHTML = temp + "°" + symbol;
+//console.log("temp"+temp);
+var quality = data.weather[0].main;
+//alert (quality);
+document.querySelector("#quality").innerHTML = quality;
+//console.log("weather" + weather);
+image(quality);
     }
+}
+function image (quality) {
+if (quality === "Clear"){
+document.body.style.backgroundImage = "url('clear.jpg')";
+} else if (quality === "Clouds") {document.body.style.backgroundImage = "url('cloudy.jpg')";
+} else if (quality === "Rain" || quality === "Drizzle") {document.body.style.backgroundImage = "url('rain.jpg')";
+} else if (quality === "Extreme") {document.body.style.backgroundImage = "url('extreme.jpg')";
+}
 }
 
 function processUvResponse(uvdata) {
 console.log("processUvResponse called");
 var uvi = uvdata.data;
-if (!uvdata.data) {console.log("uv data unavailable");}
-else {console.log(uvi);}
+if (!uvdata.data) {document.querySelector("#uvi").innerHTML = "Have a great day!"}
+//{console.log("uv data unavailable");}
+else {
+document.querySelector("#uvi").innerHTML = "UV Index: " + uvi;}
+//{console.log(uvi);}
 }
-});
 
- // function toggleUnits() {
- //        if (countryUnits === 'metric') {                           // check if currently set to imperial or metric.
- //            tempSymbol = 'F';
- //            windSymbol = 'miles/hour';
- //            countryUnits = 'imperial';
- //            pressureSymbol = 'mb';
- //            button.innerHTML = 'Use Metric Units';
- //            temperature = Math.round((temperature * 9 / 5) + 32);       // convert temperature to 'fahrenheit'.
- //            displayTemperature.innerHTML = temperature;
- //            displayDegreeSymbol.innerHTML = " &deg;" + tempSymbol;
- //            windSpeed = Math.round(windSpeed / 1.609344);               // convert wind speed to 'miles/hr'.
- //            displayWinds.innerHTML = "Winds " + windDirection + " " + windSpeed + " " + windSymbol;
- //            pressure = pressure * 10;                                   // convert pressure to 'mb'.
- //            displayPressure.innerHTML = "Barometric Pressure: " + pressure + " " + pressureSymbol;
- //        }
- //        else {
- //            tempSymbol = 'C';
- //            countryUnits = 'metric';
- //            windSymbol = 'km/hour';
- //            pressureSymbol = 'kPa';
- //            button.innerHTML = 'Use Imperial Units';
- //            temperature = Math.round((temperature - 32) * 5 / 9);       // convert temperature to 'celsius'.
- //            displayTemperature.innerHTML = temperature;
- //            displayDegreeSymbol.innerHTML = " &deg;" + tempSymbol;
- //            windSpeed = Math.round(windSpeed * 1.609344);               // convert wind speed to 'Km/h'.
- //            displayWinds.innerHTML = "Winds " + windDirection + " " + windSpeed + " " + windSymbol;
- //            pressure = pressure / 10;                                   // convert pressure to'KPa'.
- //            displayPressure.innerHTML = "Barometric Pressure: " + pressure + " " + pressureSymbol;
- //        }
- //    }
+});

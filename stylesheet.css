@@ -7,29 +7,34 @@ html {
   box-sizing: inherit;
 margin: 0;
 padding: 0;
-	font-size: 100%;
+	font-size: 16px;
 	font: inherit;
 	vertical-align: baseline;
   display: block;
   overflow: auto;
+}
+body {
+background-image: url(coldclear.jpg);
+background-size: contain;
+background-repeat: no-repeat;
+background-position: center;
+border-radius: 10%;
+max-width: 500px;
+max-height: 500px;
+font-family: sans-serif;
+font-size: 200%;
+color: white;
+
+margin: auto;
 }
 
-html {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+#weather {
+margin: auto;
+text-align: center;
+text-shadow: 2px 2px 2px black;
 }
-*, *:before, *:after {
-  -webkit-box-sizing: inherit;
-  -moz-box-sizing: inherit;
-  box-sizing: inherit;
-  }
-* {
-margin: 0;
-padding: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-  display: block;
-  overflow: auto;
+
+#temperature {
+font-weight: bold;
+font-size: 200%;
 }
